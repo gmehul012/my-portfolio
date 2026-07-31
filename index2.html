@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mehul Gupta — VLSI Engineer &amp; Data Scientist</title>
+<meta name="description" content="Portfolio of Mehul Gupta, VLSI Engineer and Data Scientist — RTL design, FPGA, and machine learning.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-void:#080b0c;
+    --bg-panel:#0f1517;
+    --bg-panel-2:#131a1d;
+    --board-line: rgba(94,234,212,0.05);
+    --copper:#c98a4b;
+    --copper-dim:#8a6438;
+    --mask-green:#123326;
+    --mask-green-line: rgba(45,140,98,0.35);
+    --signal:#5eead4;
+    --signal-soft: rgba(94,234,212,0.5);
+    --signal-glow: rgba(94,234,212,0.35);
+    --amber:#e8a33d;
+    --text:#e9eef0;
+    --text-dim:#8fa0a3;
+    --text-faint:#5c6a6d;
+    --font-display: 'JetBrains Mono', ui-monospace, monospace;
+    --font-body: 'Inter', -apple-system, sans-serif;
+    --radius: 2px;
+    --maxw: 1180px;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background: var(--bg-void);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height:1.6;
+    overflow-x:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  a{ color:inherit; text-decoration:none; }
+  ul{ list-style:none; }
+  section{ position:relative; z-index:2; }
+  img,svg{ display:block; max-width:100%; }
+
+  ::selection{ background: var(--signal); color:#04141a; }
+
+  :focus-visible{
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+
+  .wrap{ max-width: var(--maxw); margin:0 auto; padding:0 32px; }
+  @media (max-width:640px){ .wrap{ padding:0 20px; } }
+
+  .eyebrow{
+    font-family:var(--font-display);
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color: var(--signal);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px; height:1px;
+    background: var(--signal);
+    box-shadow:0 0 6px var(--signal-glow);
+  }
+
+  h1,h2,h3{
+    font-family:var(--font-display);
+    font-weight:700;
+    letter-spacing:-0.01em;
+    color:var(--text);
+  }
+
+  /* ============ CIRCUIT BACKGROUND ============ */
+  .circuit-field{
+    position:fixed; inset:0;
+    z-index:0;
+    pointer-events:none;
+    background:
+      repeating-linear-gradient(90deg, var(--board-line) 0 1px, transparent 1px 64px),
+      repeating-linear-gradient(0deg, var(--board-line) 0 1px, transparent 1px 64px);
+    background-color: var(--bg-void);
+  }
+  .circuit-field svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .trace-path{
+    fill:none;
+    stroke: var(--mask-green-line);
+    stroke-width:1.4;
+  }
+  .trace-pulse{
+    fill:none;
+    stroke: var(--signal);
+    stroke-width:1.6;
+    stroke-dasharray: 6 220;
+    filter: drop-shadow(0 0 3px var(--signal-glow));
+    animation: flow 7s linear infinite;
+  }
+  .trace-pulse.slow{ animation-duration:11s; stroke:var(--copper); filter:drop-shadow(0 0 3px rgba(201,138,75,0.45)); }
+  .trace-pulse.fast{ animation-duration:4.5s; }
+  @keyframes flow{
+    to{ stroke-dashoffset:-900; }
+  }
+  .pad{ fill: var(--bg-panel-2); stroke: var(--mask-green-line); stroke-width:1.2; }
+  .pad-lit{ fill: var(--signal); opacity:0.7; }
+
+  /* ============ NAV ============ */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    background: rgba(8,11,12,0.82);
+    backdrop-filter: blur(10px);
+    border-bottom:1px solid rgba(94,234,212,0.12);
+  }
+  .nav-row{
+    display:flex; align-items:center; justify-content:space-between;
+    height:64px;
+  }
+  .logo{
+    font-family:var(--font-display);
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.02em;
+    display:flex; align-items:center; gap:8px;
+  }
+  .logo .dot{
+    width:7px; height:7px; border-radius:50%;
+    background: var(--signal);
+    box-shadow:0 0 8px var(--signal-glow);
+    animation: blink 2.4s ease-in-out infinite;
+  }
+  @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:0.35;} }
+
+  nav ul{ display:flex; gap:34px; }
+  nav a{
+    font-family:var(--font-display);
+    font-size:12.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    position:relative;
+    padding:4px 0;
+    transition:color .2s ease;
+  }
+  nav a::after{
+    content:""; position:absolute; left:0; bottom:-2px;
+    width:0; height:1px; background:var(--signal);
+    box-shadow:0 0 6px var(--signal-glow);
+    transition:width .25s ease;
+  }
+  nav a:hover{ color:var(--text); }
+  nav a:hover::after{ width:100%; }
+  .nav-toggle{ display:none; }
+  @media (max-width:760px){
+    nav ul{ display:none; }
+  }
+
+  /* ============ HERO ============ */
+  .hero{
+    min-height:100svh;
+    display:flex; align-items:center;
+    padding-top:110px; padding-bottom:60px;
+  }
+  .hero-grid{
+    display:grid; grid-template-columns: 1.3fr 0.9fr; gap:60px; align-items:center;
+  }
+  @media (max-width:900px){ .hero-grid{ grid-template-columns:1fr; } }
+
+  .hero-role{
+    font-family:var(--font-display);
+    color:var(--copper);
+    font-size:13px; letter-spacing:0.1em; text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  h1.hero-name{
+    font-size:clamp(38px, 6vw, 68px);
+    line-height:1.04;
+    margin-bottom:20px;
+  }
+  h1.hero-name span{ color: var(--signal); }
+  .hero-desc{
+    font-size:16.5px; color:var(--text-dim); max-width:52ch; margin-bottom:34px;
+  }
+  .hero-cta{ display:flex; gap:14px; flex-wrap:wrap; }
+
+  .btn{
+    font-family:var(--font-display);
+    font-size:12.5px; letter-spacing:0.06em; text-transform:uppercase;
+    padding:13px 22px;
+    border-radius:var(--radius);
+    display:inline-flex; align-items:center; gap:10px;
+    transition:all .2s ease;
+    border:1px solid transparent;
+    cursor:pointer;
+  }
+  .btn-primary{
+    background: var(--signal); color:#04181a; font-weight:700;
+    box-shadow:0 0 0 1px var(--signal), 0 0 18px var(--signal-glow);
+  }
+  .btn-primary:hover{ background:#8ff2e2; }
+  .btn-ghost{
+    color:var(--text); border-color: rgba(94,234,212,0.35);
+    background: rgba(94,234,212,0.03);
+  }
+  .btn-ghost:hover{ border-color:var(--signal); background: rgba(94,234,212,0.08); }
+
+  .chip-pin{ width:6px; height:6px; background:currentColor; border-radius:1px; }
+
+  /* Hero side panel: "datasheet" card */
+  .datasheet{
+    background: linear-gradient(180deg, var(--bg-panel), var(--bg-panel-2));
+    border:1px solid rgba(94,234,212,0.15);
+    border-radius:var(--radius);
+    padding:26px;
+    position:relative;
+  }
+  .datasheet::before, .datasheet::after{
+    content:""; position:absolute; width:14px; height:14px;
+    border:1.5px solid var(--copper); opacity:0.7;
+  }
+  .datasheet::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+  .datasheet::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+  .datasheet-head{
+    font-family:var(--font-display); font-size:11px; letter-spacing:0.1em;
+    color:var(--text-faint); text-transform:uppercase; margin-bottom:18px;
+    display:flex; justify-content:space-between;
+  }
+  .spec-row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:11px 0; border-bottom:1px dashed rgba(94,234,212,0.14);
+    font-size:13.5px;
+  }
+  .spec-row:last-child{ border-bottom:none; }
+  .spec-label{ color:var(--text-dim); font-family:var(--font-display); font-size:12px; letter-spacing:0.03em; }
+  .spec-val{ font-family:var(--font-display); color:var(--signal); font-weight:600; }
+
+  /* ============ SECTION HEADERS ============ */
+  .section-pad{ padding:110px 0; }
+  @media (max-width:640px){ .section-pad{ padding:76px 0; } }
+  .section-head{ margin-bottom:52px; max-width:640px; }
+  .section-head h2{ font-size:clamp(26px,4vw,38px); margin-bottom:14px; }
+  .section-head p{ color:var(--text-dim); font-size:15.5px; }
+
+  /* ============ ABOUT ============ */
+  .about-grid{ display:grid; grid-template-columns: 1.4fr 1fr; gap:56px; }
+  @media (max-width:860px){ .about-grid{ grid-template-columns:1fr; } }
+  .about-body p{ color:var(--text-dim); font-size:15.5px; margin-bottom:16px; }
+  .about-body strong{ color:var(--text); font-weight:600; }
+
+  .stat-panel{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:rgba(94,234,212,0.14); border:1px solid rgba(94,234,212,0.14); border-radius:var(--radius); overflow:hidden; }
+  .stat-cell{ background:var(--bg-panel); padding:22px 18px; }
+  .stat-num{ font-family:var(--font-display); font-size:26px; color:var(--signal); font-weight:700; }
+  .stat-lbl{ font-size:11.5px; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.06em; margin-top:6px; }
+
+  /* ============ SKILLS ============ */
+  .skill-groups{ display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; }
+  .skill-card{
+    background:var(--bg-panel); border:1px solid rgba(94,234,212,0.1);
+    border-radius:var(--radius); padding:24px;
+    position:relative;
+  }
+  .skill-card h3{
+    font-size:13px; color:var(--copper); text-transform:uppercase; letter-spacing:0.08em;
+    margin-bottom:16px; display:flex; align-items:center; gap:8px;
+  }
+  .skill-card h3::before{ content:""; width:16px; height:2px; background:var(--copper); }
+  .tag-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .tag{
+    font-family:var(--font-display); font-size:12px; padding:6px 10px;
+    border:1px solid rgba(94,234,212,0.18); border-radius:var(--radius);
+    color:var(--text-dim); background:rgba(94,234,212,0.03);
+    transition:.2s ease;
+  }
+  .tag:hover{ color:var(--signal); border-color:var(--signal); background:rgba(94,234,212,0.08); }
+
+  /* ============ PROJECTS ============ */
+  .project-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:24px; }
+  .project-card{
+    background: linear-gradient(180deg, var(--bg-panel), var(--bg-panel-2));
+    border:1px solid rgba(94,234,212,0.12);
+    border-radius:var(--radius);
+    padding:26px;
+    display:flex; flex-direction:column; gap:14px;
+    transition:border-color .2s ease, transform .2s ease;
+  }
+  .project-card:hover{ border-color:var(--signal); transform:translateY(-3px); }
+  .project-top{ display:flex; align-items:center; justify-content:space-between; }
+  .led{ width:8px; height:8px; border-radius:50%; background:var(--signal); box-shadow:0 0 8px var(--signal-glow); animation:blink 2.8s ease-in-out infinite; }
+  .project-card h3{ font-size:17px; line-height:1.35; }
+  .project-card p{ color:var(--text-dim); font-size:14px; }
+  .tool-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:auto; padding-top:8px; }
+  .tool-row span{
+    font-family:var(--font-display); font-size:10.5px; color:var(--text-faint);
+    border:1px solid rgba(255,255,255,0.08); padding:3px 8px; border-radius:var(--radius);
+  }
+
+  /* ============ EXPERIENCE TIMELINE ============ */
+  .timeline{ position:relative; padding-left:34px; }
+  .timeline::before{
+    content:""; position:absolute; left:5px; top:6px; bottom:6px; width:2px;
+    background: repeating-linear-gradient(180deg, var(--signal) 0 6px, transparent 6px 12px);
+    opacity:0.55;
+  }
+  .tl-item{ position:relative; padding-bottom:44px; }
+  .tl-item:last-child{ padding-bottom:0; }
+  .tl-node{
+    position:absolute; left:-34px; top:4px; width:12px; height:12px; border-radius:50%;
+    background:var(--bg-void); border:2px solid var(--signal); box-shadow:0 0 10px var(--signal-glow);
+  }
+  .tl-meta{ display:flex; flex-wrap:wrap; gap:10px; align-items:baseline; margin-bottom:6px; }
+  .tl-role{ font-family:var(--font-display); font-size:15.5px; color:var(--text); font-weight:700; }
+  .tl-time{ font-family:var(--font-display); font-size:11.5px; color:var(--signal); }
+  .tl-org{ font-size:13.5px; color:var(--copper); margin-bottom:10px; }
+  .tl-item ul{ display:flex; flex-direction:column; gap:6px; }
+  .tl-item li{ font-size:14.5px; color:var(--text-dim); padding-left:16px; position:relative; }
+  .tl-item li::before{ content:"›"; position:absolute; left:0; color:var(--signal); }
+
+  /* ============ EDUCATION ============ */
+  .edu-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; }
+  .edu-card{ border:1px solid rgba(94,234,212,0.12); border-radius:var(--radius); padding:20px; background:var(--bg-panel); }
+  .edu-card h4{ font-family:var(--font-display); font-size:14px; margin-bottom:6px; }
+  .edu-card .edu-sub{ font-size:12.5px; color:var(--text-dim); margin-bottom:10px; }
+  .edu-card .edu-score{ font-family:var(--font-display); color:var(--signal); font-size:13px; }
+
+  /* ============ CONTACT ============ */
+  .contact-grid{ display:grid; grid-template-columns:0.9fr 1.1fr; gap:56px; }
+  @media (max-width:860px){ .contact-grid{ grid-template-columns:1fr; } }
+  .contact-links{ display:flex; flex-direction:column; gap:14px; margin-top:26px; }
+  .contact-link{
+    display:flex; align-items:center; gap:12px;
+    font-family:var(--font-display); font-size:13.5px; color:var(--text-dim);
+    border:1px solid rgba(94,234,212,0.12); padding:14px 16px; border-radius:var(--radius);
+    transition:.2s ease;
+  }
+  .contact-link:hover{ color:var(--signal); border-color:var(--signal); background:rgba(94,234,212,0.05); }
+
+  form{ display:flex; flex-direction:column; gap:18px; }
+  .field label{
+    display:block; font-family:var(--font-display); font-size:11px; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--text-faint); margin-bottom:8px;
+  }
+  .field input, .field textarea{
+    width:100%; background:var(--bg-panel); border:1px solid rgba(94,234,212,0.16);
+    border-radius:var(--radius); padding:13px 14px; color:var(--text); font-family:var(--font-body);
+    font-size:14.5px; transition:border-color .2s ease, box-shadow .2s ease;
+  }
+  .field input:focus, .field textarea:focus{
+    outline:none; border-color:var(--signal); box-shadow:0 0 0 3px rgba(94,234,212,0.12);
+  }
+  .field textarea{ min-height:130px; resize:vertical; }
+  .form-note{ font-size:12px; color:var(--text-faint); }
+
+  /* ============ FOOTER ============ */
+  footer{
+    border-top:1px solid rgba(94,234,212,0.1);
+    padding:34px 0;
+  }
+  .foot-row{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px; }
+  .foot-links{ display:flex; gap:20px; }
+  .foot-links a{ font-family:var(--font-display); font-size:12px; color:var(--text-dim); }
+  .foot-links a:hover{ color:var(--signal); }
+  .foot-sig{ font-family:var(--font-display); font-size:11.5px; color:var(--text-faint); }
+
+  /* ============ SCROLL REVEAL ============ */
+  .reveal{ opacity:0; transform:translateY(22px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="circuit-field" aria-hidden="true">
+  <svg viewBox="0 0 1600 1400" preserveAspectRatio="xMidYMid slice">
+    <path class="trace-path" d="M0,120 H260 L300,160 H620 L660,200 H1000" />
+    <path class="trace-pulse" d="M0,120 H260 L300,160 H620 L660,200 H1000" />
+    <path class="trace-path" d="M1600,80 H1240 L1200,120 H900 L860,160 H520" />
+    <path class="trace-pulse slow" d="M1600,80 H1240 L1200,120 H900 L860,160 H520" />
+    <path class="trace-path" d="M0,360 H180 L220,400 H700 L740,440 H1600" />
+    <path class="trace-pulse fast" d="M0,360 H180 L220,400 H700 L740,440 H1600" />
+    <path class="trace-path" d="M100,0 V220 L140,260 V520" />
+    <path class="trace-pulse" d="M100,0 V220 L140,260 V520" />
+    <path class="trace-path" d="M1500,0 V180 L1460,220 V600" />
+    <path class="trace-pulse slow" d="M1500,0 V180 L1460,220 V600" />
+    <path class="trace-path" d="M0,640 H320 L360,680 H780 L820,720 H1600" />
+    <path class="trace-pulse" d="M0,640 H320 L360,680 H780 L820,720 H1600" />
+    <path class="trace-path" d="M1600,900 H1300 L1260,940 H860 L820,980 H300" />
+    <path class="trace-pulse fast" d="M1600,900 H1300 L1260,940 H860 L820,980 H300" />
+    <path class="trace-path" d="M420,1400 V1140 L460,1100 V860" />
+    <path class="trace-pulse slow" d="M420,1400 V1140 L460,1100 V860" />
+    <path class="trace-path" d="M1180,1400 V1180 L1140,1140 V920" />
+    <path class="trace-pulse" d="M1180,1400 V1180 L1140,1140 V920" />
+    <path class="trace-path" d="M0,1100 H240 L280,1140 H640 L680,1180 H1600" />
+    <path class="trace-pulse fast" d="M0,1100 H240 L280,1140 H640 L680,1180 H1600" />
+
+    <circle class="pad" cx="300" cy="160" r="4"></circle>
+    <circle class="pad" cx="660" cy="200" r="4"></circle>
+    <circle class="pad pad-lit" cx="220" cy="400" r="4"></circle>
+    <circle class="pad" cx="740" cy="440" r="4"></circle>
+    <circle class="pad" cx="360" cy="680" r="4"></circle>
+    <circle class="pad pad-lit" cx="820" cy="720" r="4"></circle>
+    <circle class="pad" cx="1260" cy="940" r="4"></circle>
+    <circle class="pad" cx="460" cy="1100" r="4"></circle>
+    <circle class="pad pad-lit" cx="1140" cy="1140" r="4"></circle>
+    <circle class="pad" cx="280" cy="1140" r="4"></circle>
+  </svg>
+</div>
+
+<header>
+  <div class="wrap nav-row">
+    <div class="logo"><span class="dot" aria-hidden="true"></span>MEHUL.GUPTA</div>
+    <nav aria-label="Primary">
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="hero" id="home">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="hero-role">// VLSI Engineer &amp; Data Scientist</div>
+        <h1 class="hero-name">Mehul Gupta<br><span>designs silicon,</span> trains models.</h1>
+        <p class="hero-desc">Final-year Electronics Engineering student building at the intersection of RTL design and machine learning — from a self-testing RAM built out of raw logic gates to FPGA-based signal detection at ISRO, with 85%+ accuracy on radiology image analysis along the way.</p>
+        <div class="hero-cta">
+          <a href="#projects" class="btn btn-primary">View Projects</a>
+          <a href="#" class="btn btn-ghost">Download Resume</a>
+          <a href="#contact" class="btn btn-ghost">Get in Touch</a>
+        </div>
+      </div>
+
+      <div class="datasheet reveal">
+        <div class="spec-row"><span class="spec-label">Role</span><span class="spec-val">VLSI + ML</span></div>
+        <div class="spec-row"><span class="spec-label">Education</span><span class="spec-val">B.Tech ECE — 8.3 CGPA</span></div>
+        <div class="spec-row"><span class="spec-label">Internships</span><span class="spec-val">3</span></div>
+        <div class="spec-row"><span class="spec-label">Projects</span><span class="spec-val">3+</span></div>
+        <div class="spec-row"><span class="spec-label">Core Tools</span><span class="spec-val">Vivado · LTspice · Python</span></div>
+        <div class="spec-row"><span class="spec-label">Status</span><span class="spec-val">Open to Roles</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad" id="about">
+    <div class="wrap">
+      <div class="about-grid">
+        <div>
+          <div class="eyebrow">01 / About</div>
+          <h2 class="section-head" style="margin-bottom:22px;">A circuit-level thinker with a data-driven habit</h2>
+          <div class="about-body">
+            <p>I'm a final-year Electronics Engineering student who moves comfortably between <strong>gate-level hardware</strong> and <strong>machine learning pipelines</strong>. Across 5+ projects and two industry internships, I've worked in data science, ML, and AI — boosting outreach efficiency by <strong>90% through automation</strong> and hitting <strong>85%+ accuracy</strong> on a radiology image analysis model.</p>
+            <p>My foundation is in VLSI engineering: digital logic design, RTL, and analog circuit behavior, paired with strong Python and data-structures fundamentals. I like problems that need both — reading a datasheet in the morning and a confusion matrix in the afternoon.</p>
+          </div>
+        </div>
+        <div class="stat-panel reveal">
+          <div class="stat-cell"><div class="stat-num">8.3</div><div class="stat-lbl">CGPA, B.Tech ECE</div></div>
+          <div class="stat-cell"><div class="stat-num">90%</div><div class="stat-lbl">Outreach Efficiency Gain</div></div>
+          <div class="stat-cell"><div class="stat-num">85%+</div><div class="stat-lbl">Radiology Model Accuracy</div></div>
+          <div class="stat-cell"><div class="stat-num">2</div><div class="stat-lbl">Active Internships</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad" id="skills">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">02 / Skills</div>
+        <h2>Toolchain</h2>
+        <p>Languages, silicon tools, and the ML stack I reach for most.</p>
+      </div>
+      <div class="skill-groups">
+        <div class="skill-card reveal">
+          <h3>Languages</h3>
+          <div class="tag-row">
+            <span class="tag">Python</span><span class="tag">Java</span><span class="tag">Verilog</span>
+            <span class="tag">C / C++</span><span class="tag">Unix</span><span class="tag">TCL</span><span class="tag">Shell</span>
+          </div>
+        </div>
+        <div class="skill-card reveal">
+          <h3>Data Science &amp; ML</h3>
+          <div class="tag-row">
+            <span class="tag">NumPy</span><span class="tag">Pandas</span><span class="tag">Matplotlib</span>
+            <span class="tag">Scikit-learn</span><span class="tag">Random Forest</span>
+          </div>
+        </div>
+        <div class="skill-card reveal">
+          <h3>EDA &amp; Hardware Tools</h3>
+          <div class="tag-row">
+            <span class="tag">QuestaSim</span><span class="tag">MATLAB</span><span class="tag">Vivado</span>
+            <span class="tag">Cadence Virtuoso</span><span class="tag">OrCAD</span><span class="tag">Cadence Xcelium</span>
+          </div>
+        </div>
+        <div class="skill-card reveal">
+          <h3>Core Competencies</h3>
+          <div class="tag-row">
+            <span class="tag">Digital Logic Design</span><span class="tag">RTL Design</span>
+            <span class="tag">Microcontrollers</span><span class="tag">Serial Protocols</span>
+          </div>
+        </div>
+        <div class="skill-card reveal">
+          <h3>Coursework</h3>
+          <div class="tag-row">
+            <span class="tag">Data Structures &amp; Algorithms</span><span class="tag">VLSI Design</span>
+            <span class="tag">Integrated Circuits</span><span class="tag">Control Systems</span><span class="tag">System Design</span>
+          </div>
+        </div>
+        <div class="skill-card reveal">
+          <h3>Professional</h3>
+          <div class="tag-row">
+            <span class="tag">Analytical Thinking</span><span class="tag">Rapid Self-Learning</span>
+            <span class="tag">Task Prioritization</span><span class="tag">Agile Teamwork</span><span class="tag">Adaptability</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad" id="projects">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">03 / Projects</div>
+        <h2>Things I've built</h2>
+        <p>From breadboard-level memory subsystems to transistor-level SRAM simulation.</p>
+      </div>
+      <div class="project-grid">
+        <div class="project-card reveal">
+          <div class="project-top"><span class="led" aria-hidden="true"></span></div>
+          <h3>Discrete-Logic Memory Subsystem</h3>
+          <p>A byte-addressable RAM module built entirely from 74-series logic ICs on breadboards, with real row/column address decoding, parity-based error detection, and memory-mapped I/O — architected the way commercial memory chips work internally. Adds dual-port access with bus arbitration, a built-in self-test system with a custom address-uniqueness algorithm, and simulated non-volatile backup power.</p>
+          <div class="tool-row"><span>74-Series Logic</span><span>Address Decoding</span><span>Parity EDAC</span><span>Dual-Port</span></div>
+        </div>
+        <div class="project-card reveal">
+          <div class="project-top"><span class="led" aria-hidden="true"></span></div>
+          <h3>CMOS Memory Cell Design</h3>
+          <p>Designed a CMOS-based memory cell and evaluated its read/write behavior, measuring propagation delay, power dissipation, and noise margins to validate reliable operation.</p>
+          <div class="tool-row"><span>LTspice</span><span>CMOS Design</span><span>Analog Analysis</span></div>
+        </div>
+        <div class="project-card reveal">
+          <div class="project-top"><span class="led" aria-hidden="true"></span></div>
+          <h3>6T SRAM Cell in LTspice</h3>
+          <p>Designed and simulated a 6T SRAM cell at the transistor level to perform read, write, and hold operations, analyzing power consumption, stability, and retention across simulation runs.</p>
+          <div class="tool-row"><span>LTspice</span><span>CMOS Technology</span><span>Circuit Simulation</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad" id="experience">
+    <div class="wrap">
+      <div class="section-head">
+        <div class="eyebrow">04 / Experience</div>
+        <h2>Where I've worked</h2>
+      </div>
+
+      <div class="timeline">
+        <div class="tl-item reveal">
+          <div class="tl-node"></div>
+          <div class="tl-meta">
+            <span class="tl-role">Intern — Physical Design &amp; AI Engineer</span>
+            <span class="tl-time">May 2026 – Present</span>
+          </div>
+          <div class="tl-org">U R Rao Satellite Centre (ISRO) · Bangalore, India (On-site)</div>
+          <ul>
+            <li>Built a resource-minimal jammer detection algorithm using Radix-2 FFT, alpha-beta power estimation, dual-rate IIR noise tracking, and a spikiness-based adaptive threshold — processing 1024 real samples into 512 bins with only 5 BRAM and 4 DSP48 on a Virtex FPGA.</li>
+            <li>Simulated and RTL-coded the full algorithm and implemented it on Virtex FPGA, achieving real-time narrowband jammer detection under &lt;600 slices.</li>
+          </ul>
+        </div>
+
+        <div class="tl-item reveal">
+          <div class="tl-node"></div>
+          <div class="tl-meta">
+            <span class="tl-role">Intern — Junior Research Associate</span>
+            <span class="tl-time">Jan 2026 – Present</span>
+          </div>
+          <div class="tl-org">Sarvshix, SIIC – IIT Kanpur · Kanpur, India (On-site)</div>
+          <ul>
+            <li>Developed real-time embedded applications using microcontrollers and sensors, implementing hardware–software integration for data acquisition and control.</li>
+            <li>Designed and simulated digital circuits using HDL (Verilog/VHDL), with exposure to synthesis, timing analysis, and basic ASIC design flow.</li>
+          </ul>
+        </div>
+
+        <div class="tl-item reveal">
+          <div class="tl-node"></div>
+          <div class="tl-meta">
+            <span class="tl-role">Machine Learning Intern</span>
+            <span class="tl-time">Jun 2025 – Sep 2025</span>
+          </div>
+          <div class="tl-org">Manipal University Jaipur (MUJ) · Jaipur, India (On-site)</div>
+          <ul>
+            <li>Implemented particle deposition simulations on geometrically patterned membranes, modeling Brownian motion, advection, and particle–surface interactions.</li>
+            <li>Used NumPy, SciPy, and scikit-learn for feature extraction, pattern recognition, and predictive modeling of deposition efficiency across membrane designs.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top:64px;">
+        <div class="eyebrow">Education</div>
+        <div class="edu-row">
+          <div class="edu-card reveal">
+            <h4>Harcourt Butler Technical University</h4>
+            <div class="edu-sub">B.Tech, Electronics Engineering · 2023–2027</div>
+            <div class="edu-score">CGPA 8.3</div>
+          </div>
+          <div class="edu-card reveal">
+            <h4>United Public School, Kanpur</h4>
+            <div class="edu-sub">Intermediate</div>
+            <div class="edu-score">92.25%</div>
+          </div>
+          <div class="edu-card reveal">
+            <h4>United Public School, Kanpur</h4>
+            <div class="edu-sub">High School</div>
+            <div class="edu-score">94%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad" id="contact">
+    <div class="wrap">
+      <div class="contact-grid">
+        <div>
+          <div class="eyebrow">05 / Contact</div>
+          <h2 class="section-head" style="margin-bottom:14px;">Let's close the loop</h2>
+          <p style="color:var(--text-dim); font-size:15px; max-width:40ch;">Open to roles in VLSI, embedded systems, and applied ML. Reach out directly or send a message.</p>
+          <div class="contact-links">
+            <a class="contact-link" href="mailto:gmehul079@gmail.com">✉ gmehul079@gmail.com</a>
+            <a class="contact-link" href="#" target="_blank" rel="noopener">in LinkedIn Profile</a>
+          </div>
+        </div>
+        <form id="contact-form">
+          <div class="field">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="align-self:flex-start;">Send Message</button>
+          <p class="form-note" id="form-note">This form opens your email client with the message pre-filled.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap foot-row">
+    <div class="foot-sig">MEHUL GUPTA — © 2026 · CIRCUIT CLOSED</div>
+    <div class="foot-links">
+      <a href="mailto:gmehul079@gmail.com">Email</a>
+      <a href="#" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="#">Resume</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold:0.15 });
+  revealEls.forEach(el=>io.observe(el));
+
+  // Contact form -> mailto
+  const form = document.getElementById('contact-form');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const message = document.getElementById('message').value;
+    const subject = encodeURIComponent('Portfolio contact from ' + name);
+    const body = encodeURIComponent(message + '\n\n— ' + name + ' (' + email + ')');
+    window.location.href = 'mailto:gmehul079@gmail.com?subject=' + subject + '&body=' + body;
+  });
+</script>
+
+</body>
+</html>
