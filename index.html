@@ -58,6 +58,18 @@
     outline-offset: 3px;
   }
 
+  /* ============ SCROLL PROGRESS TRACE ============ */
+  .progress-trace{
+    position:fixed; top:0; left:0; right:0; height:2px; z-index:60;
+    background: rgba(94,234,212,0.08);
+  }
+  .progress-trace-fill{
+    height:100%; width:0%;
+    background: linear-gradient(90deg, var(--copper), var(--signal));
+    box-shadow: 0 0 10px var(--signal-glow), 0 0 4px var(--signal);
+    transition: width .08s linear;
+  }
+
   .wrap{ max-width: var(--maxw); margin:0 auto; padding:0 32px; }
   @media (max-width:640px){ .wrap{ padding:0 20px; } }
 
@@ -186,11 +198,21 @@
     margin-bottom:14px;
   }
   h1.hero-name{
-    font-size:clamp(38px, 6vw, 68px);
-    line-height:1.04;
-    margin-bottom:20px;
+    font-size:clamp(48px, 8.5vw, 92px);
+    line-height:1.0;
+    letter-spacing:-0.02em;
+    margin-bottom:22px;
+    text-shadow: 0 0 46px rgba(94,234,212,0.16);
   }
-  h1.hero-name span{ color: var(--signal); }
+  h1.hero-name span{
+    color: var(--signal);
+    text-shadow: 0 0 28px var(--signal-glow);
+  }
+  .hero-role .cursor{
+    display:inline-block; width:8px; height:13px; background:var(--signal);
+    margin-left:6px; vertical-align:-2px; box-shadow:0 0 8px var(--signal-glow);
+    animation: blink 1s steps(1) infinite;
+  }
   .hero-desc{
     font-size:16.5px; color:var(--text-dim); max-width:52ch; margin-bottom:34px;
   }
@@ -292,12 +314,41 @@
     background: linear-gradient(180deg, var(--bg-panel), var(--bg-panel-2));
     border:1px solid rgba(94,234,212,0.12);
     border-radius:var(--radius);
-    padding:26px;
+    padding:0 0 26px 0;
     display:flex; flex-direction:column; gap:14px;
-    transition:border-color .2s ease, transform .2s ease;
+    transition:border-color .25s ease, transform .2s ease, box-shadow .3s ease;
+    transform-style:preserve-3d;
+    overflow:hidden;
+    will-change:transform;
   }
-  .project-card:hover{ border-color:var(--signal); transform:translateY(-3px); }
-  .project-top{ display:flex; align-items:center; justify-content:space-between; }
+  .project-card:hover{
+    border-color:var(--signal);
+    box-shadow:0 18px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(94,234,212,0.2);
+  }
+  .project-card > .project-body{ padding:0 26px; display:flex; flex-direction:column; gap:14px; flex:1; }
+  .project-top{ display:flex; align-items:center; justify-content:space-between; padding:16px 26px 0; }
+
+  .project-art{
+    position:relative; height:150px; width:100%;
+    background:
+      radial-gradient(circle at 30% 20%, rgba(94,234,212,0.10), transparent 55%),
+      repeating-linear-gradient(90deg, rgba(94,234,212,0.05) 0 1px, transparent 1px 22px),
+      repeating-linear-gradient(0deg, rgba(94,234,212,0.05) 0 1px, transparent 1px 22px);
+    border-bottom:1px solid rgba(94,234,212,0.12);
+    overflow:hidden;
+  }
+  .project-art svg{ width:100%; height:100%; }
+  .art-line{
+    fill:none; stroke:var(--mask-green-line); stroke-width:1.4;
+  }
+  .art-pulse{
+    fill:none; stroke:var(--signal); stroke-width:1.6;
+    stroke-dasharray:5 90; filter:drop-shadow(0 0 3px var(--signal-glow));
+    animation: flow 4.5s linear infinite;
+  }
+  .art-chip{ fill:var(--bg-panel-2); stroke:var(--copper); stroke-width:1.2; }
+  .art-pin{ stroke:var(--copper-dim); stroke-width:1.4; }
+  .art-dot{ fill:var(--signal); }
   .led{ width:8px; height:8px; border-radius:50%; background:var(--signal); box-shadow:0 0 8px var(--signal-glow); animation:blink 2.8s ease-in-out infinite; }
   .project-card h3{ font-size:17px; line-height:1.35; }
   .project-card p{ color:var(--text-dim); font-size:14px; }
@@ -381,6 +432,8 @@
 </head>
 <body>
 
+<div class="progress-trace" aria-hidden="true"><div class="progress-trace-fill" id="progress-fill"></div></div>
+
 <div class="circuit-field" aria-hidden="true">
   <svg viewBox="0 0 1600 1400" preserveAspectRatio="xMidYMid slice">
     <path class="trace-path" d="M0,120 H260 L300,160 H620 L660,200 H1000" />
@@ -437,7 +490,7 @@
   <section class="hero" id="home">
     <div class="wrap hero-grid">
       <div>
-        <div class="hero-role">// VLSI Engineer &amp; Data Scientist</div>
+        <div class="hero-role">// VLSI Engineer &amp; Data Scientist<span class="cursor" aria-hidden="true"></span></div>
         <h1 class="hero-name">Mehul Gupta<br><span>designs silicon,</span> trains models.</h1>
         <p class="hero-desc">Final-year Electronics Engineering student building at the intersection of RTL design and machine learning — from a self-testing RAM built out of raw logic gates to FPGA-based signal detection at ISRO, with 85%+ accuracy on radiology image analysis along the way.</p>
         <div class="hero-cta">
@@ -448,10 +501,11 @@
       </div>
 
       <div class="datasheet reveal">
+        <div class="datasheet-head"><span>DEVICE // MG-2027</span><span>REV 1.0</span></div>
         <div class="spec-row"><span class="spec-label">Role</span><span class="spec-val">VLSI + ML</span></div>
         <div class="spec-row"><span class="spec-label">Education</span><span class="spec-val">B.Tech ECE — 8.3 CGPA</span></div>
-        <div class="spec-row"><span class="spec-label">Internships</span><span class="spec-val">3</span></div>
-        <div class="spec-row"><span class="spec-label">Projects</span><span class="spec-val">3+</span></div>
+        <div class="spec-row"><span class="spec-label">Internships</span><span class="spec-val">2 Active</span></div>
+        <div class="spec-row"><span class="spec-label">Projects Shipped</span><span class="spec-val">5+</span></div>
         <div class="spec-row"><span class="spec-label">Core Tools</span><span class="spec-val">Vivado · LTspice · Python</span></div>
         <div class="spec-row"><span class="spec-label">Status</span><span class="spec-val">Open to Roles</span></div>
       </div>
@@ -470,10 +524,10 @@
           </div>
         </div>
         <div class="stat-panel reveal">
-          <div class="stat-cell"><div class="stat-num">8.3</div><div class="stat-lbl">CGPA, B.Tech ECE</div></div>
-          <div class="stat-cell"><div class="stat-num">90%</div><div class="stat-lbl">Outreach Efficiency Gain</div></div>
-          <div class="stat-cell"><div class="stat-num">85%+</div><div class="stat-lbl">Radiology Model Accuracy</div></div>
-          <div class="stat-cell"><div class="stat-num">2</div><div class="stat-lbl">Active Internships</div></div>
+          <div class="stat-cell"><div class="stat-num" data-count="8.3" data-decimals="1">0</div><div class="stat-lbl">CGPA, B.Tech ECE</div></div>
+          <div class="stat-cell"><div class="stat-num"><span data-count="90">0</span>%</div><div class="stat-lbl">Outreach Efficiency Gain</div></div>
+          <div class="stat-cell"><div class="stat-num"><span data-count="85">0</span>%+</div><div class="stat-lbl">Radiology Model Accuracy</div></div>
+          <div class="stat-cell"><div class="stat-num" data-count="2">0</div><div class="stat-lbl">Active Internships</div></div>
         </div>
       </div>
     </div>
@@ -541,23 +595,81 @@
         <p>From breadboard-level memory subsystems to transistor-level SRAM simulation.</p>
       </div>
       <div class="project-grid">
-        <div class="project-card reveal">
+        <div class="project-card reveal tilt-card">
+          <div class="project-art" aria-hidden="true">
+            <svg viewBox="0 0 300 150">
+              <rect class="art-chip" x="118" y="50" width="64" height="50" rx="2"></rect>
+              <line class="art-pin" x1="118" y1="60" x2="100" y2="60"></line>
+              <line class="art-pin" x1="118" y1="75" x2="100" y2="75"></line>
+              <line class="art-pin" x1="118" y1="90" x2="100" y2="90"></line>
+              <line class="art-pin" x1="182" y1="60" x2="200" y2="60"></line>
+              <line class="art-pin" x1="182" y1="75" x2="200" y2="75"></line>
+              <line class="art-pin" x1="182" y1="90" x2="200" y2="90"></line>
+              <path class="art-line" d="M20,30 H100 M20,60 H100 M20,90 H100 M20,120 H100 M200,30 H280 M200,60 H280 M200,90 H280 M200,120 H280"></path>
+              <path class="art-pulse" d="M20,30 H100"></path>
+              <path class="art-pulse" d="M200,90 H280" style="animation-delay:-1.5s"></path>
+              <path class="art-pulse" d="M20,120 H100" style="animation-delay:-3s"></path>
+              <circle class="art-dot" cx="20" cy="30" r="2.5"></circle>
+              <circle class="art-dot" cx="280" cy="90" r="2.5"></circle>
+              <circle class="art-dot" cx="20" cy="120" r="2.5"></circle>
+            </svg>
+          </div>
           <div class="project-top"><span class="led" aria-hidden="true"></span></div>
-          <h3>Discrete-Logic Memory Subsystem</h3>
-          <p>A byte-addressable RAM module built entirely from 74-series logic ICs on breadboards, with real row/column address decoding, parity-based error detection, and memory-mapped I/O — architected the way commercial memory chips work internally. Adds dual-port access with bus arbitration, a built-in self-test system with a custom address-uniqueness algorithm, and simulated non-volatile backup power.</p>
-          <div class="tool-row"><span>74-Series Logic</span><span>Address Decoding</span><span>Parity EDAC</span><span>Dual-Port</span></div>
+          <div class="project-body">
+            <h3>Discrete-Logic Memory Subsystem</h3>
+            <p>A byte-addressable RAM module built entirely from 74-series logic ICs on breadboards, with real row/column address decoding, parity-based error detection, and memory-mapped I/O — architected the way commercial memory chips work internally. Adds dual-port access with bus arbitration, a built-in self-test system with a custom address-uniqueness algorithm, and simulated non-volatile backup power.</p>
+            <div class="tool-row"><span>74-Series Logic</span><span>Address Decoding</span><span>Parity EDAC</span><span>Dual-Port</span></div>
+          </div>
         </div>
-        <div class="project-card reveal">
+
+        <div class="project-card reveal tilt-card">
+          <div class="project-art" aria-hidden="true">
+            <svg viewBox="0 0 300 150">
+              <path class="art-line" d="M20,110 L60,50 L100,95 L140,40 L180,100 L220,55 L260,90 L280,60" ></path>
+              <path class="art-pulse" d="M20,110 L60,50 L100,95 L140,40 L180,100 L220,55 L260,90 L280,60" style="stroke-dasharray:6 260;"></path>
+              <path class="art-line" d="M0,130 H300" opacity="0.5"></path>
+              <path class="art-line" d="M0,20 H300" opacity="0.3"></path>
+              <circle class="art-dot" cx="20" cy="110" r="2.5"></circle>
+              <circle class="art-dot" cx="140" cy="40" r="2.5"></circle>
+              <circle class="art-dot" cx="280" cy="60" r="2.5"></circle>
+            </svg>
+          </div>
           <div class="project-top"><span class="led" aria-hidden="true"></span></div>
-          <h3>CMOS Memory Cell Design</h3>
-          <p>Designed a CMOS-based memory cell and evaluated its read/write behavior, measuring propagation delay, power dissipation, and noise margins to validate reliable operation.</p>
-          <div class="tool-row"><span>LTspice</span><span>CMOS Design</span><span>Analog Analysis</span></div>
+          <div class="project-body">
+            <h3>CMOS Memory Cell Design</h3>
+            <p>Designed a CMOS-based memory cell and evaluated its read/write behavior, measuring propagation delay, power dissipation, and noise margins to validate reliable operation.</p>
+            <div class="tool-row"><span>LTspice</span><span>CMOS Design</span><span>Analog Analysis</span></div>
+          </div>
         </div>
-        <div class="project-card reveal">
+
+        <div class="project-card reveal tilt-card">
+          <div class="project-art" aria-hidden="true">
+            <svg viewBox="0 0 300 150">
+              <g class="art-line">
+                <rect x="30" y="30" width="26" height="26"></rect>
+                <rect x="66" y="30" width="26" height="26"></rect>
+                <rect x="102" y="30" width="26" height="26"></rect>
+                <rect x="30" y="66" width="26" height="26"></rect>
+                <rect x="66" y="66" width="26" height="26"></rect>
+                <rect x="102" y="66" width="26" height="26"></rect>
+                <rect x="30" y="102" width="26" height="26"></rect>
+                <rect x="66" y="102" width="26" height="26"></rect>
+                <rect x="102" y="102" width="26" height="26"></rect>
+              </g>
+              <rect x="66" y="66" width="26" height="26" fill="rgba(94,234,212,0.14)" stroke="var(--signal)" stroke-width="1.6"></rect>
+              <path class="art-line" d="M128,79 H260"></path>
+              <path class="art-pulse" d="M128,79 H260" style="stroke-dasharray:5 130;"></path>
+              <path class="art-line" d="M155,30 V130" opacity="0.4"></path>
+              <path class="art-line" d="M185,30 V130" opacity="0.25"></path>
+              <circle class="art-dot" cx="260" cy="79" r="2.5"></circle>
+            </svg>
+          </div>
           <div class="project-top"><span class="led" aria-hidden="true"></span></div>
-          <h3>6T SRAM Cell in LTspice</h3>
-          <p>Designed and simulated a 6T SRAM cell at the transistor level to perform read, write, and hold operations, analyzing power consumption, stability, and retention across simulation runs.</p>
-          <div class="tool-row"><span>LTspice</span><span>CMOS Technology</span><span>Circuit Simulation</span></div>
+          <div class="project-body">
+            <h3>6T SRAM Cell in LTspice</h3>
+            <p>Designed and simulated a 6T SRAM cell at the transistor level to perform read, write, and hold operations, analyzing power consumption, stability, and retention across simulation runs.</p>
+            <div class="tool-row"><span>LTspice</span><span>CMOS Technology</span><span>Circuit Simulation</span></div>
+          </div>
         </div>
       </div>
     </div>
@@ -688,6 +800,53 @@
     });
   }, { threshold:0.15 });
   revealEls.forEach(el=>io.observe(el));
+
+  // Scroll progress trace
+  const progressFill = document.getElementById('progress-fill');
+  function updateProgress(){
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progressFill.style.width = scrolled + '%';
+  }
+  document.addEventListener('scroll', updateProgress, { passive:true });
+  updateProgress();
+
+  // Count-up stats
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const countEls = document.querySelectorAll('[data-count]');
+  const countIO = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      const el = e.target;
+      const target = parseFloat(el.getAttribute('data-count'));
+      const decimals = parseInt(el.getAttribute('data-decimals') || '0');
+      if(reduceMotion){ el.textContent = target.toFixed(decimals); countIO.unobserve(el); return; }
+      const duration = 1200;
+      const start = performance.now();
+      function tick(now){
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = (target * eased).toFixed(decimals);
+        if(p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+      countIO.unobserve(el);
+    });
+  }, { threshold:0.5 });
+  countEls.forEach(el=>countIO.observe(el));
+
+  // Project card tilt + glow toward cursor
+  if(!reduceMotion){
+    document.querySelectorAll('.tilt-card').forEach(card=>{
+      card.addEventListener('mousemove', (e)=>{
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform = `perspective(700px) rotateX(${(-y*5).toFixed(2)}deg) rotateY(${(x*5).toFixed(2)}deg) translateY(-3px)`;
+      });
+      card.addEventListener('mouseleave', ()=>{ card.style.transform = ''; });
+    });
+  }
 
   // Contact form -> mailto
   const form = document.getElementById('contact-form');
