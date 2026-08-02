@@ -108,7 +108,7 @@
       repeating-linear-gradient(0deg, var(--board-line) 0 1px, transparent 1px 64px);
     background-color: var(--bg-void);
   }
-  .circuit-field svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .circuit-field svg{ position:absolute; inset:-4% ; width:108%; height:108%; transition: transform .3s ease-out; }
   .trace-path{
     fill:none;
     stroke: var(--mask-green-line);
@@ -117,18 +117,26 @@
   .trace-pulse{
     fill:none;
     stroke: var(--signal);
-    stroke-width:1.6;
-    stroke-dasharray: 6 220;
-    filter: drop-shadow(0 0 3px var(--signal-glow));
-    animation: flow 7s linear infinite;
+    stroke-width:2;
+    stroke-linecap:round;
+    stroke-dasharray: 8 200;
+    filter: drop-shadow(0 0 5px var(--signal-glow)) drop-shadow(0 0 10px rgba(94,234,212,0.18));
+    animation: flow 6s linear infinite;
   }
-  .trace-pulse.slow{ animation-duration:11s; stroke:var(--copper); filter:drop-shadow(0 0 3px rgba(201,138,75,0.45)); }
-  .trace-pulse.fast{ animation-duration:4.5s; }
+  .trace-pulse.slow{ animation-duration:10s; stroke:var(--copper); filter: drop-shadow(0 0 5px rgba(201,138,75,0.5)) drop-shadow(0 0 10px rgba(201,138,75,0.2)); }
+  .trace-pulse.fast{ animation-duration:3.4s; }
   @keyframes flow{
     to{ stroke-dashoffset:-900; }
   }
+  .spark{
+    filter: drop-shadow(0 0 6px var(--signal)) drop-shadow(0 0 12px rgba(94,234,212,0.5));
+  }
   .pad{ fill: var(--bg-panel-2); stroke: var(--mask-green-line); stroke-width:1.2; }
-  .pad-lit{ fill: var(--signal); opacity:0.7; }
+  .pad-lit{ fill: var(--signal); opacity:0.8; animation: padglow 2.6s ease-in-out infinite; }
+  @keyframes padglow{
+    0%,100%{ opacity:0.35; }
+    50%{ opacity:1; }
+  }
 
   /* ============ NAV ============ */
   header{
@@ -378,6 +386,14 @@
   .tl-item ul{ display:flex; flex-direction:column; gap:6px; }
   .tl-item li{ font-size:14.5px; color:var(--text-dim); padding-left:16px; position:relative; }
   .tl-item li::before{ content:"›"; position:absolute; left:0; color:var(--signal); }
+  .tl-cert-btn{
+    display:inline-flex; align-items:center; gap:8px; margin-top:16px;
+    font-family:var(--font-display); font-size:11.5px; letter-spacing:0.05em; text-transform:uppercase;
+    color:var(--signal); border:1px solid rgba(94,234,212,0.3); padding:9px 14px; border-radius:var(--radius);
+    background:rgba(94,234,212,0.04); transition:.2s ease;
+  }
+  .tl-cert-btn::before{ content:"⧉"; font-size:12px; }
+  .tl-cert-btn:hover{ background:rgba(94,234,212,0.12); border-color:var(--signal); box-shadow:0 0 14px rgba(94,234,212,0.15); }
 
   /* ============ EDUCATION ============ */
   .edu-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:18px; }
@@ -457,6 +473,13 @@
     <path class="trace-path" d="M0,1100 H240 L280,1140 H640 L680,1180 H1600" />
     <path class="trace-pulse fast" d="M0,1100 H240 L280,1140 H640 L680,1180 H1600" />
 
+    <path class="trace-path" d="M900,0 V140 L940,180 V300 L980,340 V500" />
+    <path class="trace-pulse fast" d="M900,0 V140 L940,180 V300 L980,340 V500" />
+    <path class="trace-path" d="M0,860 H160 L200,900 H480 L520,940 H900 L940,980 H1600" />
+    <path class="trace-pulse slow" d="M0,860 H160 L200,900 H480 L520,940 H900 L940,980 H1600" />
+    <path class="trace-path" d="M1300,1400 V1240 L1260,1200 V960 L1220,920 V700" />
+    <path class="trace-pulse fast" d="M1300,1400 V1240 L1260,1200 V960 L1220,920 V700" />
+
     <circle class="pad" cx="300" cy="160" r="4"></circle>
     <circle class="pad" cx="660" cy="200" r="4"></circle>
     <circle class="pad pad-lit" cx="220" cy="400" r="4"></circle>
@@ -467,6 +490,28 @@
     <circle class="pad" cx="460" cy="1100" r="4"></circle>
     <circle class="pad pad-lit" cx="1140" cy="1140" r="4"></circle>
     <circle class="pad" cx="280" cy="1140" r="4"></circle>
+    <circle class="pad pad-lit" cx="940" cy="980" r="4"></circle>
+    <circle class="pad" cx="980" cy="340" r="4"></circle>
+    <circle class="pad pad-lit" cx="1220" cy="920" r="4"></circle>
+
+    <circle class="spark" r="3" fill="var(--signal)">
+      <animateMotion dur="6s" repeatCount="indefinite" path="M0,120 H260 L300,160 H620 L660,200 H1000" />
+    </circle>
+    <circle class="spark" r="3" fill="var(--copper)">
+      <animateMotion dur="10s" repeatCount="indefinite" path="M1600,80 H1240 L1200,120 H900 L860,160 H520" />
+    </circle>
+    <circle class="spark" r="2.6" fill="var(--signal)">
+      <animateMotion dur="3.4s" repeatCount="indefinite" path="M0,360 H180 L220,400 H700 L740,440 H1600" />
+    </circle>
+    <circle class="spark" r="3" fill="var(--signal)">
+      <animateMotion dur="6s" repeatCount="indefinite" path="M0,640 H320 L360,680 H780 L820,720 H1600" />
+    </circle>
+    <circle class="spark" r="2.6" fill="var(--copper)">
+      <animateMotion dur="10s" repeatCount="indefinite" path="M0,860 H160 L200,900 H480 L520,940 H900 L940,980 H1600" />
+    </circle>
+    <circle class="spark" r="2.6" fill="var(--signal)">
+      <animateMotion dur="3.4s" repeatCount="indefinite" path="M1300,1400 V1240 L1260,1200 V960 L1220,920 V700" />
+    </circle>
   </svg>
 </div>
 
@@ -495,16 +540,17 @@
         <p class="hero-desc">Final-year Electronics Engineering student building at the intersection of RTL design and machine learning — from a self-testing RAM built out of raw logic gates to FPGA-based signal detection at ISRO, with 85%+ accuracy on radiology image analysis along the way.</p>
         <div class="hero-cta">
           <a href="#projects" class="btn btn-primary">View Projects</a>
-          <a href="#" class="btn btn-ghost">Download Resume</a>
+          <a href="https://drive.google.com/file/d/1j4m10wE16CZfhhd94twwwDeqmPMhH_8O/view?usp=drive_link" class="btn btn-ghost" target="_blank" rel="noopener">Download Resume</a>
           <a href="#contact" class="btn btn-ghost">Get in Touch</a>
         </div>
       </div>
 
       <div class="datasheet reveal">
+        <div class="datasheet-head"><span>DEVICE // MG-2027</span><span>REV 1.0</span></div>
         <div class="spec-row"><span class="spec-label">Role</span><span class="spec-val">VLSI + ML</span></div>
         <div class="spec-row"><span class="spec-label">Education</span><span class="spec-val">B.Tech ECE — 8.3 CGPA</span></div>
-        <div class="spec-row"><span class="spec-label">Internships</span><span class="spec-val">3</span></div>
-        <div class="spec-row"><span class="spec-label">Projects </span><span class="spec-val">3+</span></div>
+        <div class="spec-row"><span class="spec-label">Internships</span><span class="spec-val">2 Active</span></div>
+        <div class="spec-row"><span class="spec-label">Projects Shipped</span><span class="spec-val">5+</span></div>
         <div class="spec-row"><span class="spec-label">Core Tools</span><span class="spec-val">Vivado · LTspice · Python</span></div>
         <div class="spec-row"><span class="spec-label">Status</span><span class="spec-val">Open to Roles</span></div>
       </div>
@@ -693,6 +739,7 @@
             <li>Built a resource-minimal jammer detection algorithm using Radix-2 FFT, alpha-beta power estimation, dual-rate IIR noise tracking, and a spikiness-based adaptive threshold — processing 1024 real samples into 512 bins with only 5 BRAM and 4 DSP48 on a Virtex FPGA.</li>
             <li>Simulated and RTL-coded the full algorithm and implemented it on Virtex FPGA, achieving real-time narrowband jammer detection under &lt;600 slices.</li>
           </ul>
+          <a class="tl-cert-btn" href="https://drive.google.com/file/d/1QlBtzV9b5mYFoYCU7dDAEeJas5c07VeH/view?usp=drivesdk" target="_blank" rel="noopener">View Certificate</a>
         </div>
 
         <div class="tl-item reveal">
@@ -706,6 +753,7 @@
             <li>Developed real-time embedded applications using microcontrollers and sensors, implementing hardware–software integration for data acquisition and control.</li>
             <li>Designed and simulated digital circuits using HDL (Verilog/VHDL), with exposure to synthesis, timing analysis, and basic ASIC design flow.</li>
           </ul>
+          <a class="tl-cert-btn" href="https://drive.google.com/file/d/1a_cv4ie_BTQJpuL1ChGGvcpMNfBSnuuI/view?usp=drivesdk" target="_blank" rel="noopener">View Certificate</a>
         </div>
 
         <div class="tl-item reveal">
@@ -719,6 +767,7 @@
             <li>Implemented particle deposition simulations on geometrically patterned membranes, modeling Brownian motion, advection, and particle–surface interactions.</li>
             <li>Used NumPy, SciPy, and scikit-learn for feature extraction, pattern recognition, and predictive modeling of deposition efficiency across membrane designs.</li>
           </ul>
+          <a class="tl-cert-btn" href="https://drive.google.com/file/d/1WLQHPmPivxxyTFtuPDzuAn48Ntz5vNph/view?usp=drivesdk" target="_blank" rel="noopener">View Certificate</a>
         </div>
       </div>
 
@@ -754,7 +803,8 @@
           <p style="color:var(--text-dim); font-size:15px; max-width:40ch;">Open to roles in VLSI, embedded systems, and applied ML. Reach out directly or send a message.</p>
           <div class="contact-links">
             <a class="contact-link" href="mailto:gmehul079@gmail.com">✉ gmehul079@gmail.com</a>
-            <a class="contact-link" href="#" target="_blank" rel="noopener">in LinkedIn Profile</a>
+            <a class="contact-link" href="https://www.linkedin.com/in/mehul-gupta-a0a89528b" target="_blank" rel="noopener">in LinkedIn Profile</a>
+            <a class="contact-link" href="https://drive.google.com/file/d/1j4m10wE16CZfhhd94twwwDeqmPMhH_8O/view?usp=drive_link" target="_blank" rel="noopener">↓ Download Resume (PDF)</a>
           </div>
         </div>
         <form id="contact-form">
@@ -784,8 +834,8 @@
     <div class="foot-sig">MEHUL GUPTA — © 2026 · CIRCUIT CLOSED</div>
     <div class="foot-links">
       <a href="mailto:gmehul079@gmail.com">Email</a>
-      <a href="#" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="#">Resume</a>
+      <a href="https://www.linkedin.com/in/mehul-gupta-a0a89528b" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://drive.google.com/file/d/1j4m10wE16CZfhhd94twwwDeqmPMhH_8O/view?usp=drive_link" target="_blank" rel="noopener">Resume</a>
     </div>
   </div>
 </footer>
@@ -833,6 +883,16 @@
     });
   }, { threshold:0.5 });
   countEls.forEach(el=>countIO.observe(el));
+
+  // Subtle parallax drift on the circuit background
+  if(!reduceMotion){
+    const fieldSvg = document.querySelector('.circuit-field svg');
+    window.addEventListener('mousemove', (e)=>{
+      const x = (e.clientX / window.innerWidth - 0.5) * 14;
+      const y = (e.clientY / window.innerHeight - 0.5) * 14;
+      fieldSvg.style.transform = `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px)`;
+    }, { passive:true });
+  }
 
   // Project card tilt + glow toward cursor
   if(!reduceMotion){
